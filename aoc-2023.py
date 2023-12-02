@@ -40,11 +40,11 @@ def initargs():
     return parser.parse_args()
 
 
-def readcsv(filename):
+def readcsv(filename, csv_delimeter):
     parsed = []
     try:
         with open(filename, newline='') as csvfile:
-            for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
+            for row in csv.reader(csvfile, delimiter=csv_delimeter, quotechar='"'):
                 parsed.append(row)
     except FileNotFoundError:
         print(f"File {filename} could not be opened. Are you sure it exists?")
@@ -82,16 +82,24 @@ def main(args):
     prefix = f'example{part}-' if args.test else ''
     answer_filename = f'{folder}/{prefix}answer.txt'
     input_filename = f'{folder}/{prefix}input.txt'
+
+    # Each puzzle CSV may use different delimeters
+    # Default to comma (,)
+    delimeters = {
+        2: ';'
+    }
+    csv_delimeter = delimeters[int(day)] if int(day) in delimeters else ','
+
     if args.test:
         print('****** RUNNING IN TEST MODE (USING EXAMPLE FILES) ******')
         if args.verbose:
             print(f'Reading Answers CSV: {answer_filename}')
-        answer = readcsv(answer_filename)
+        answer = readcsv(answer_filename, csv_delimeter)
     else:
         answer = []
     if args.verbose:
         print(f'Reading Input CSV: {input_filename}')
-    input = readcsv(input_filename)
+    input = readcsv(input_filename, csv_delimeter)
     solve(day, int(part), input, answer, args)
 
 
