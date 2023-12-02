@@ -1,2 +1,5 @@
 # aoc-2023
-Advent of Code 2022
+
+My various Advent of Code solutions for 2023 are in this repository.
+
+https://adventofcode.com/2023
