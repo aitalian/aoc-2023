@@ -19,11 +19,11 @@ def initargs():
     parser.add_argument(
         '-p', '--part',
         type=int,
-        choices=[1, 2],
+        choices=[0, 1, 2],
         metavar='part',
-        help='Question number (or part) used for test/example input/answer file prefixes',
+        help='Question number (or part) used for test/example input/answer file prefixes. If not set (0), script will loop through all parts.',
         dest='part',
-        required=True
+        default=0
     )
     parser.add_argument(
         '--test',
@@ -41,9 +41,13 @@ def initargs():
 
 def readcsv(filename):
     parsed = []
-    with open(filename, newline='') as csvfile:
-        for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
-            parsed.append(row)
+    try:
+        with open(filename, newline='') as csvfile:
+            for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
+                parsed.append(row)
+    except FileNotFoundError:
+        print(f"File {filename} could not be opened. Are you sure it exists?")
+        exit()
     return parsed
 
 def solve(day, part, input, answer, args):
@@ -71,4 +75,9 @@ def main(args):
 
 if __name__ == "__main__":
     args = initargs()
-    main(args)
+    if args.part == 0:
+        for x in [1, 2]:
+            args.part = x
+            main(args)
+    else:
+        main(args)

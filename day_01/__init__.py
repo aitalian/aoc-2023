@@ -4,7 +4,7 @@ def solve(day, part, input, answer, args):
     print(f"Day {day} Solution.")
     values = []
     for row in input:
-        values.append(calibration_value(row[0], part, args))
+        values.append(calibration_value(row[0], part))
     # Remove None values, convert to int
     values = list(map(int, filter(lambda a: a is not None, values)))
     if args.verbose:
@@ -20,7 +20,7 @@ def solve(day, part, input, answer, args):
         else:
             print(f"\t❌ Test FAILED! Expected answer: {answer[0][0]}")
 
-def calibration_value(row, part, args):
+def calibration_value(row, part):
     # Get first and last digit
     # Combine them to get the calibration value
     if part == 1:
