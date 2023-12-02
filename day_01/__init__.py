@@ -21,9 +21,11 @@ def calibration_value(row, part):
     # Get first and last digit
     # Combine them to get the calibration value
     if part == 1:
-        match = re.findall(r'\d', row)
+        # Match any digit
+        r = r'\d'
     if part == 2:
         # Create a dictionary matching phonetic number strings to integers
+        # NOTE: Omitted zero (0) as it was not mentioned in the puzzle
         phonetic_numbers = {
             'one': 1,
             'two': 2,
@@ -38,14 +40,14 @@ def calibration_value(row, part):
 
         # Build a regex that will search for digits and phonetic strings
         p = '|'.join(k for k, v in phonetic_numbers.items())
+        # Find all matches even overlapping ones
         r = f'(?=(\d|{p}))'
 
-        # Find all matches even overlapping ones
-        match = re.findall(r, row)
+    matches = re.findall(r, row)
 
     # In the end we only care about the first and last match
-    first = match[0]
-    last = match[-1]
+    first = matches[0]
+    last = matches[-1]
 
     if part == 2:
         # Replace phonetic number strings with their matching integer
@@ -53,8 +55,8 @@ def calibration_value(row, part):
             first = first.replace(k, str(v))
             last = last.replace(k, str(v))
 
-    if len(match) >= 1:
+    if len(matches) >= 1:
         # first & last; if there is only one match, they will be the same value
         return ''.join([first, last])
-    else:
-        return
+
+    return

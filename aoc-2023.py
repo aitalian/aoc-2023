@@ -56,10 +56,15 @@ def solve(day, part, input, answer, args):
     solution = importlib.import_module(f'day_{day}')
     this_answer = solution.solve(day, part, input, args)
     if args.test:
-        test(this_answer, int(answer[0][0]), args.verbose)
+        test(this_answer, answer[0][0], args.verbose)
 
 
 def test(answer, expected, verbose):
+    match answer:
+        case str():
+            expected = str(expected)
+        case int():
+            expected = int(expected)
     if answer == expected:
         if verbose:
             print("\t✅ Test passed!")
