@@ -11,7 +11,7 @@ def initargs():
         '-d', '--day',
         type=int,
         choices=range(1, 26),
-        metavar='day',
+        metavar='[1-25]',
         help='Numbered day of the solution (ex: 1, 02, or 25)',
         dest='day',
         required=True
@@ -20,7 +20,7 @@ def initargs():
         '-p', '--part',
         type=int,
         choices=[0, 1, 2],
-        metavar='part',
+        metavar='[0-2]',
         help='Question number (or part) used for test/example input/answer file prefixes. If not set (0), script will loop through all parts.',
         dest='part',
         default=0
