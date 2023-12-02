@@ -2,11 +2,12 @@ import csv
 import argparse
 import importlib
 
+
 def initargs():
     parser = argparse.ArgumentParser(
-                prog='aoc-2023',
-                description='Advent of Code 2023'
-            )
+        prog='aoc-2023',
+        description='Advent of Code 2023'
+    )
     parser.add_argument(
         '-d', '--day',
         type=int,
@@ -50,9 +51,24 @@ def readcsv(filename):
         exit()
     return parsed
 
+
 def solve(day, part, input, answer, args):
     solution = importlib.import_module(f'day_{day}')
-    solution.solve(day, part, input, answer, args)
+    this_answer = solution.solve(day, part, input, args)
+    if args.test:
+        test(this_answer, int(answer[0][0]), args.verbose)
+
+
+def test(answer, expected, verbose):
+    if answer == expected:
+        if verbose:
+            print("\t✅ Test passed!")
+        return True
+    else:
+        if verbose:
+            print(f"\t❌ Test FAILED! Expected answer: {expected}")
+        return False
+
 
 def main(args):
     day = str(args.day).zfill(2)
@@ -64,14 +80,15 @@ def main(args):
     if args.test:
         print('****** RUNNING IN TEST MODE (USING EXAMPLE FILES) ******')
         if args.verbose:
-            print('Reading Answers CSV: ' + answer_filename)
+            print(f'Reading Answers CSV: {answer_filename}')
         answer = readcsv(answer_filename)
     else:
         answer = []
     if args.verbose:
-        print('Reading Input CSV: ' + input_filename)
+        print(f'Reading Input CSV: {input_filename}')
     input = readcsv(input_filename)
     solve(day, int(part), input, answer, args)
+
 
 if __name__ == "__main__":
     args = initargs()

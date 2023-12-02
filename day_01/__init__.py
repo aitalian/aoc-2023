@@ -1,38 +1,27 @@
 import re
 
-def solve(day, part, input, answer, args):
+
+def solve(day, part, input, args):
     print(f"Day {day} Solution.")
+    # Get the calibration value for each row
+    # Add them up together (sum) to get answer
     values = []
     for row in input:
         values.append(calibration_value(row[0], part))
     # Remove None values, convert to int
     values = list(map(int, filter(lambda a: a is not None, values)))
-    if args.verbose:
-        print("All calibration values:")
-        print(values)
     this_answer = sum(values)
-    # Get the calibration value for each row
-    # Add them up together (sum) to get answer for part one
-    print(f"\t Part {part}: Sum of Calibration values = {this_answer}")
-    if args.test:
-        if this_answer == int(answer[0][0]):
-            print("\t✅ Test passed!")
-        else:
-            print(f"\t❌ Test FAILED! Expected answer: {answer[0][0]}")
+    print(f"\tPart {part}: Sum of Calibration values = {this_answer}")
+    if args.verbose:
+        print(f"\tAll calibration values: {values}")
+    return this_answer
+
 
 def calibration_value(row, part):
     # Get first and last digit
     # Combine them to get the calibration value
     if part == 1:
         match = re.findall(r'\d', row)
-    if part == 2:
-        # Find all matches even overlapping ones
-        # In the end we only care about the first and last match
-        match = re.findall(r'(?=(\d|one|two|three|four|five|six|seven|eight|nine))', row)
-
-    first = match[0]
-    last = match[-1]
-
     if part == 2:
         # Create a dictionary matching phonetic number strings to integers
         phonetic_numbers = {
@@ -47,13 +36,25 @@ def calibration_value(row, part):
             'nine': 9
         }
 
-        # Now replace phonetic number strings with their matching integer
+        # Build a regex that will search for digits and phonetic strings
+        p = '|'.join(k for k, v in phonetic_numbers.items())
+        r = f'(?=(\d|{p}))'
+
+        # Find all matches even overlapping ones
+        match = re.findall(r, row)
+
+    # In the end we only care about the first and last match
+    first = match[0]
+    last = match[-1]
+
+    if part == 2:
+        # Replace phonetic number strings with their matching integer
         for k, v in phonetic_numbers.items():
             first = first.replace(k, str(v))
             last = last.replace(k, str(v))
 
     if len(match) >= 1:
-        # first & last
+        # first & last; if there is only one match, they will be the same value
         return ''.join([first, last])
     else:
         return
