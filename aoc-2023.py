@@ -10,7 +10,7 @@ def initargs():
     parser.add_argument(
         '-d', '--day',
         type=int,
-        choices=range(1, 25),
+        choices=range(1, 26),
         metavar='day',
         help='Numbered day of the solution (ex: 1, 02, or 25)',
         dest='day',
