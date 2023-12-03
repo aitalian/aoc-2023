@@ -37,13 +37,7 @@ def solve(day, part, input, args):
                 # Get the count for each colour and accumulate a total for the round
                 hand = re.findall(r'(\d)\ (red|green|blue)', r)
                 # Accumulate colours for this Game
-                match hand[0][1]:
-                    case "red":
-                        thisGame.red = thisGame.red + int(hand[0][0])
-                    case "green":
-                        thisGame.green = thisGame.green + int(hand[0][0])
-                    case "blue":
-                        thisGame.blue = thisGame.blue + int(hand[0][0])
+                setattr(thisGame, hand[0][1], getattr(thisGame, hand[0][1]) + int(hand[0][0]))
         games.append(thisGame)
 
     if args.verbose:
