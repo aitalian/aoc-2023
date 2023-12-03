@@ -35,9 +35,9 @@ def solve(day, part, input, args):
             round = [r.strip() for r in re.split(r',\ ', round)]
             for r in round:
                 # Get the count for each colour and accumulate a total for the round
-                hand = re.findall(r'(\d)\ (red|green|blue)', r)
+                hand = re.match(r'(?P<cubes>\d+)\ (?P<color>red|green|blue)', r).groupdict()
                 # Accumulate colours for this Game
-                setattr(thisGame, hand[0][1], getattr(thisGame, hand[0][1]) + int(hand[0][0]))
+                setattr(thisGame, hand['color'], getattr(thisGame, hand['color']) + int(hand['cubes']))
         games.append(thisGame)
 
     if args.verbose:
