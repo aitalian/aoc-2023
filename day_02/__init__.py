@@ -82,8 +82,8 @@ def solve(day, part, input, args):
                 g.possible = False
                 if g.id in possible_games:
                     possible_games.remove(g.id)
-                print(f"\t** Skipping game (id: {g.id}, round: {g.round}). Game already marked not possible.")
                 if args.verbose:
+                    print(f"\t** Skipping game (id: {g.id}, round: {g.round}). Game already marked not possible.")
                     print(f"\t" + str(vars(g)))
                 continue
 
