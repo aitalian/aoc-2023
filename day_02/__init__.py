@@ -14,9 +14,20 @@ class Game:
         self.red = red
         self.green = green
         self.blue = blue
+        self.total = 0
+        self.possible = True
 
-    def total(self):
-        return sum(list([self.red, self.green, self.blue]))
+    def calculateTotal(self):
+        self.total = sum(list([self.red, self.green, self.blue]))
+        return self.total
+
+
+class Round(Game):
+    round: int = 0
+
+    def __init__(self, round, gameid):
+        super().__init__(gameid)
+        self.round = round
 
 
 def solve(day, part, input, args):
@@ -29,30 +40,29 @@ def solve(day, part, input, args):
         # Remove the empty first value in the list
         game.pop(0)
         # Next value is the game id; remaining values are each round
-        id = game.pop(0)
+        gameId = game.pop(0)
         game = game + row[1:]
 
-        # Initialize a new Game object for this game
-        thisGame = Game(int(id))
-
-        for round in game:
+        for id, round in enumerate(game):
             # Strip whitespace for each round and split each colour
             round = [r.strip() for r in re.split(r',\ ', round)]
-            for r in round:
+            thisRound = Round(int(id)+1, int(gameId))
+            for cubes in round:
                 # Get the count for each colour and accumulate a total for the round
-                hand = re.match(
-                    r'(?P<cubes>\d+)\ (?P<color>red|green|blue)', r).groupdict()
-                # Accumulate colours for this Game
-                setattr(thisGame, hand['color'], getattr(
-                    thisGame, hand['color']) + int(hand['cubes']))
-        games.append(thisGame)
+                hand = re.match(r'(?P<cubes>\d+)\ (?P<colour>red|green|blue)', cubes).groupdict()
+                # Accumulate colours for this Round
+                setattr(thisRound, hand['colour'], getattr(thisRound, hand['colour']) + int(hand['cubes']))
+                thisRound.calculateTotal()
+            games.append(thisRound)
 
     if args.verbose:
         print(f"\tNumber of Games counted: {len(games)}")
 
     if part == 1:
-        # Track possible games
+        # Track possible and impossible game ids
+        # Individually we also track if rounds are possible on the object itself
         possible_games = []
+        impossible_games = []
 
         # Define constraints of coloured cubes in the bag
         bag_contains = {
@@ -68,12 +78,24 @@ def solve(day, part, input, args):
             if args.verbose:
                 print(vars(g))
 
-            # Game is impossible if total cubes exceed the maximum
-            if g.total() > max_cubes:
+            if g.possible is False or g.id in impossible_games:
                 g.possible = False
+                if g.id in possible_games:
+                    possible_games.remove(g.id)
+                print(f"\t** Skipping game (id: {g.id}, round: {g.round}). Game already marked not possible.")
                 if args.verbose:
-                    print(
-                        f"\t** Impossible game (id: {g.id}). Total cubes ({g.total()}) exceeds the maximum in the bag ({max_cubes}) 🙅‍♂️")
+                    print(f"\t" + str(vars(g)))
+                continue
+
+            # Game is impossible if total cubes in the round exceed the maximum
+            if g.calculateTotal() > max_cubes:
+                g.possible = False
+                impossible_games.append(g.id)
+                if g.id in possible_games:
+                    possible_games.remove(g.id)
+
+                if args.verbose:
+                    print(f"\t** Impossible game (id: {g.id}, round: {g.round}). Total cubes ({g.total}) exceeds the maximum in the bag ({max_cubes}) 🙅‍♂️")
                 continue
 
             # Check individual cube colour constraints
@@ -81,17 +103,22 @@ def solve(day, part, input, args):
                 for c in bag_contains:
                     if int(getattr(g, c)) > int(bag_contains[c]):
                         g.possible = False
+                        impossible_games.append(g.id)
+                        if g.id in possible_games:
+                            possible_games.remove(g.id)
                         if args.verbose:
                             print(
-                                f"\t** Impossible game (id: {g.id}. Total {c} cubes ({getattr(g, c)}) exceeds the maximum in the bag ({bag_contains[c]}) 🙅‍♂️")
+                                f"\t** Impossible game (id: {g.id}, round: {g.round}). Total {c} cubes ({getattr(g, c)}) exceeds the maximum in the bag ({bag_contains[c]}) 🙅‍♂️")
                         break
 
             if g.possible:
                 if args.verbose:
                     print(f"\tGame id: {g.id} is possible 👍")
-                possible_games.append(g.id)
+                if g.id not in possible_games:
+                    possible_games.append(g.id)
+            if args.verbose:
+                print(f"\t" + str(vars(g)))
 
-        # FIXME: Getting answer of 200 (previously 839) for the sum but site says it's too low
         sum_of_possible_games = sum(map(int, possible_games))
         print(
             f"\tPart {part}: Sum of Possible Game IDs = {sum_of_possible_games}")
