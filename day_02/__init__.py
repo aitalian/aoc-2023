@@ -155,7 +155,7 @@ def solve(day, part, input, args):
         sum_of_power = sum(map(int, power))
 
         print(
-            f"\tPart {part}: Sum of Power for possible games = {sum_of_power}")
+            f"\tPart {part}: Sum of Power for all games = {sum_of_power}")
 
         return sum_of_power
 
